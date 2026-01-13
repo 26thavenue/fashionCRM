@@ -10,6 +10,10 @@ import {
   Package,
   CheckSquare,
   Calendar,
+  Settings,
+  CalendarClock, 
+  History,      
+  CalendarRange 
 } from 'lucide-react'
 
 const DASHBOARD_BASE = '/dashboard'
@@ -17,7 +21,7 @@ const DASHBOARD_BASE = '/dashboard'
 const Sidebar = () => {
   const pathname = usePathname()
 
-  const menuItems = [
+  const mainItems = [
     { icon: LayoutDashboard, label: 'Overview', href: '' },
     { icon: ShoppingCart, label: 'Orders', href: '/orders' },
     { icon: Users, label: 'Clients', href: '/clients' },
@@ -26,56 +30,92 @@ const Sidebar = () => {
     { icon: Calendar, label: 'Calendar', href: '/calendar' },
   ]
 
-const isActiveRoute = (href: string) => {
-  const fullPath = `${DASHBOARD_BASE}${href}`
+  const workItems = [
+    { icon: CalendarClock, label: 'Today', href: '/work/today' },
+    { icon: History, label: 'Yesterday', href: '/work/yesterday' },
+    { icon: CalendarRange, label: 'This Week', href: '/work/week' },
+  ]
 
-  // Overview → exact match only
-  if (href === '') {
-    return pathname === DASHBOARD_BASE
+  const isActiveRoute = (href: string) => {
+    const fullPath = `${DASHBOARD_BASE}${href}`
+    if (href === '') return pathname === DASHBOARD_BASE
+    return pathname === fullPath || pathname.startsWith(`${fullPath}/`)
   }
 
-  // Others → match nested routes
-  return pathname === fullPath || pathname.startsWith(`${fullPath}/`)
-}
-
-
+  const SidebarItem = ({ icon: Icon, label, href }: { icon: any, label: string, href: string }) => {
+    const active = isActiveRoute(href)
+    return (
+      <li>
+        <Link
+          href={`${DASHBOARD_BASE}${href}`}
+          className={`
+            group flex text-primary items-center gap-2.5 px-2.5 py-1 min-h-7.5 text-sm font-medium rounded-md transition-colors duration-200 ease-in-out
+            ${active
+              ? 'bg-gray-300/60 text-gray-900'
+              : 'text-zinc-500 hover:bg-gray-100/40 hover:text-gray-900'
+            }
+          `}
+        >
+          <Icon
+            size={18}
+            strokeWidth={2}
+            className={`transition-colors ${active ? 'text-gray-900' : 'text-zinc-400 group-hover:text-zinc-600'}`}
+          />
+          {label}
+        </Link>
+      </li>
+    )
+  }
 
   return (
-    <aside className="w-64 fixed top-0 left-0 bg-gray-50 h-screen   border-r border-gray-200">
-      <div className="px-6 py-6 border-b border-gray-200">
-        <h1 className="text-lg font-semibold">
-          Thalia's Workspace
-        </h1>
+    <aside className="w-60 fixed top-0 left-0 bg-[#F7F7F5] h-screen border-r border-gray-200 flex flex-col font-sans">
+      
+      {/* HEADER */}
+      <div className="px-4 py-3 mb-2 hover:bg-gray-200/50 cursor-pointer transition-colors duration-200">
+        <div className="flex items-center gap-2">
+           <div className="w-5 h-5 bg-purple-600 rounded text-[12px] text-white flex items-center justify-center font-bold">
+             T
+           </div>
+           <h1 className="text-sm font-medium text-gray-700 truncate">
+            Thalia's Workspace
+           </h1>
+        </div>
       </div>
 
-      <nav className="px-4 py-6">
-        <ul className="space-y-4">
-          {menuItems.map(({ icon: Icon, label, href }) => {
-            const active = isActiveRoute(href)  
+      {/* SCROLLABLE NAV AREA */}
+      <nav className="flex-1 overflow-y-auto px-2 space-y-6">
+        
+        {/* SECTION 1: Main Navigation */}
+        <div>
+            <ul className="space-y-[1px]">
+                {mainItems.map((item) => (
+                    <SidebarItem key={item.label} {...item} />
+                ))}
+            </ul>
+        </div>
 
-            return (
-              <li key={label}>
-                <Link
-                  href={`${DASHBOARD_BASE}${href}`}
-                  className={`flex items-center gap-3  px-4 py-3 rounded-lg text-sm font-medium transition
-                    ${
-                      active
-                        ? 'bg-gray-200 text-gray-900'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }
-                  `}
-                >
-                  <Icon
-                    size={20}
-                    className={active ? 'text-gray-900' : 'text-gray-500'}
-                  />
-                  {label}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+        {/* SECTION 2: Work (Time Based) */}
+        <div>
+            {/* Notion Style Section Header */}
+            <h3 className="px-2 text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">
+                Work
+            </h3>
+            <ul className="space-y-[1px]">
+                {workItems.map((item) => (
+                    <SidebarItem key={item.label} {...item} />
+                ))}
+            </ul>
+        </div>
+
       </nav>
+
+      {/* BOTTOM: Settings */}
+      <div className="px-2 py-4 border-t border-gray-200/50 mt-auto">
+           <Link href={`${DASHBOARD_BASE}/settings`} className="flex items-center gap-2.5 px-2.5 py-1 min-h-[30px] text-sm font-medium text-zinc-500 rounded-md hover:bg-gray-200/40 hover:text-gray-900 transition-colors">
+              <Settings size={18} className="text-zinc-400"/>
+              Settings
+           </Link>
+      </div>
     </aside>
   )
 }

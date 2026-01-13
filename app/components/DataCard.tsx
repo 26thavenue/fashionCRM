@@ -10,22 +10,23 @@ interface DataCardProps {
 
 const DataCard: React.FC<DataCardProps> = ({ header, value, icon: Icon, description }) => {
   return (
-    <div className="bg-white rounded-xl px-12 py-8 shadow-sm hover:shadow-md transition-shadow duration-300 ease-in-out border border-gray-100">
+    <div className=" flex flex-col justify-between rounded-lg min-w-[180px] min-h-[150px]  p-3 font-mono bg-[#0d1327]  max-w-[250px] transition-shadow duration-300 ease-in-out ">
       {/* Header and Icon */}
-    <div className="flex flex-row-reverse items-center gap-2 justify-end mb-4">
-        <h3 className="text-gray-600 text-sm font-medium">{header}</h3>
-        <Icon size={20} className="text-gray-700" />
-        
+    <div className="flex flex-col items-start gap-1 justify-start ">
+        <h3 className=" text-[10px] text-[#E6EDF3] font-medium uppercase">{header}</h3>
+        {/* <Icon size={20} className="" /> */}
+
+        <div className="">
+          <p className="text-2xl font-bold text-[#e6e5de]">{value}</p>
+        </div>
       </div>
 
       {/* Value */}
-      <div className="mb-2">
-        <p className="text-3xl font-bold text-gray-900">{value}</p>
-      </div>
+      
 
       {/* Description */}
       {description && (
-        <p className="text-xs text-gray-500">{description}</p>
+        <p className="text-[11px] text-[#999999]">{description}</p>
       )}
     </div>
   )

@@ -42,9 +42,16 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --shadow-card: 0px 2px 8px 0px rgba(99, 99, 99, 0.2);
+
+  /* The second one: Good for items needing a subtle 1px border look (Notion style) */
+  --shadow-bordered: 0px 1px 3px 0px rgba(0, 0, 0, 0.02), 0px 0px 0px 1px rgba(27, 31, 35, 0.15);
 }
 
 :root {
+  --font-primary: var(--font-rethink);
+  --font-secondary: var(--font-source);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -114,10 +121,15 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+   .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
-  body {
-    @apply bg-background text-foreground;
+
+
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
+  
 }

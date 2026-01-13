@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Source_Sans_3, Rethink_Sans,  } from "next/font/google";
 import "./globals.css";
 import { ModalProvider } from "./context/ModalContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sourceSans = Source_Sans_3({
   subsets: ["latin"],
+  variable: "--font-source",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+
+const rethinkSans = Rethink_Sans({
   subsets: ["latin"],
+  variable: "--font-rethink",
+  display: "swap",
 });
+
 
 export const metadata: Metadata = {
   title: "Thalia",
@@ -26,11 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        
+        className={`${sourceSans.variable} ${rethinkSans.variable}  antialiased `}
       >
         <ModalProvider>
           {children}
-        </ModalProvider>
+          </ModalProvider>
       </body>
     </html>
   );

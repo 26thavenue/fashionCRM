@@ -8,7 +8,7 @@ export default function DashboardLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="flex h-screen relative">
+    <div className="flex h-screen relative ">
     <Sidebar/>
 
       <main className=" ml-64">
