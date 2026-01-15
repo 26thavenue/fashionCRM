@@ -15,21 +15,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+    <div className="fixed inset-0 bg-[#000000b3] z-50 flex  items-center justify-center">
+      <div className="bg-zinc-50 rounded-2xl p-12 shadow-card max-w-xl w-full ">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            <X size={20} />
-          </button>
+        <div className="flex items-center justify-between  border-zinc-200">
+          <h2 className="text-2xl  text-[#1a1a1a]  tracking-tight ">{title}</h2>
+          
+           <button
+           onClick= {onClose} 
+           className="p-2 cursor-pointer flex items-center justify-center  bg-zinc-100 rounded-full shadow-border w-8 h-8">
+                <X className="w-5 h-5 text-zinc-700"/>
+            </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">{children}</div>
+        <div className="py-6">{children}</div>
       </div>
     </div>
   )

@@ -1,8 +1,7 @@
 'use client'
 
-import React from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -13,13 +12,17 @@ import {
   Settings,
   CalendarClock, 
   History,      
-  CalendarRange 
+  CalendarRange,
+  LogOut
 } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 const DASHBOARD_BASE = '/dashboard'
 
 const Sidebar = () => {
   const pathname = usePathname()
+  const router = useRouter()
+  const { logout } = useAuth()
 
   const mainItems = [
     { icon: LayoutDashboard, label: 'Overview', href: '' },
@@ -51,15 +54,15 @@ const Sidebar = () => {
           className={`
             group flex text-primary items-center gap-2.5 px-2.5 py-1 min-h-7.5 text-sm font-medium rounded-md transition-colors duration-200 ease-in-out
             ${active
-              ? 'bg-gray-300/60 text-gray-900'
-              : 'text-zinc-500 hover:bg-gray-100/40 hover:text-gray-900'
+              ? 'bg-zinc-300/60 text-zinc-900'
+              : 'text-zinc-500 hover:bg-zinc-100/40 hover:text-zinc-900'
             }
           `}
         >
           <Icon
             size={18}
             strokeWidth={2}
-            className={`transition-colors ${active ? 'text-gray-900' : 'text-zinc-400 group-hover:text-zinc-600'}`}
+            className={`transition-colors ${active ? 'text-zinc-900' : 'text-zinc-400 group-hover:text-zinc-600'}`}
           />
           {label}
         </Link>
@@ -68,15 +71,15 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="w-60 fixed top-0 left-0 bg-[#F7F7F5] h-screen border-r border-gray-200 flex flex-col font-sans">
+    <aside className="w-60 fixed top-0 left-0 bg-[#F7F7F5] h-screen border-r border-zinc-200 flex flex-col ">
       
       {/* HEADER */}
-      <div className="px-4 py-3 mb-2 hover:bg-gray-200/50 cursor-pointer transition-colors duration-200">
+      <div className="px-4 py-3 mb-2 hover:bg-zinc-200/50 cursor-pointer transition-colors duration-200">
         <div className="flex items-center gap-2">
            <div className="w-5 h-5 bg-purple-600 rounded text-[12px] text-white flex items-center justify-center font-bold">
              T
            </div>
-           <h1 className="text-sm font-medium text-gray-700 truncate">
+           <h1 className="text-sm font-medium text-zinc-700 truncate">
             Thalia's Workspace
            </h1>
         </div>
@@ -97,7 +100,7 @@ const Sidebar = () => {
         {/* SECTION 2: Work (Time Based) */}
         <div>
             {/* Notion Style Section Header */}
-            <h3 className="px-2 text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">
+            <h3 className="px-2 text-xs font-semibold text-zinc-400 mb-1 uppercase tracking-wider">
                 Work
             </h3>
             <ul className="space-y-[1px]">
@@ -109,12 +112,22 @@ const Sidebar = () => {
 
       </nav>
 
-      {/* BOTTOM: Settings */}
-      <div className="px-2 py-4 border-t border-gray-200/50 mt-auto">
-           <Link href={`${DASHBOARD_BASE}/settings`} className="flex items-center gap-2.5 px-2.5 py-1 min-h-[30px] text-sm font-medium text-zinc-500 rounded-md hover:bg-gray-200/40 hover:text-gray-900 transition-colors">
+      {/* BOTTOM: Settings & Logout */}
+      <div className="px-2 py-4 border-t border-zinc-200/50 mt-auto space-y-2">
+           <Link href={`${DASHBOARD_BASE}/settings`} className="flex items-center gap-2.5 px-2.5 py-1 min-h-[30px] text-sm font-medium text-zinc-500 rounded-md hover:bg-zinc-200/40 hover:text-zinc-900 transition-colors">
               <Settings size={18} className="text-zinc-400"/>
               Settings
            </Link>
+           <button 
+             onClick={() => {
+               logout()
+               router.push('/login')
+             }}
+             className="w-full flex items-center gap-2.5 px-2.5 py-1 min-h-[30px] text-sm font-medium text-zinc-500 rounded-md hover:bg-red-100/50 hover:text-red-700 transition-colors cursor-pointer"
+           >
+              <LogOut size={18} className="text-zinc-400"/>
+              Logout
+           </button>
       </div>
     </aside>
   )

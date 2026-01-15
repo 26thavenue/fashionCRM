@@ -55,11 +55,11 @@ const defaultData: OrderChartData[] = [
 
 const OrdersAreaChart: React.FC<OrdersAreaChartProps> = ({ data = defaultData }) => {
   return (
-    <div className="bg-white rounded-lg max-w-150 shadow-bordered p-8 border border-gray-200">
+    <div className="bg-[#e6e5de] rounded-lg min-w-180 shadow-bordered p-8 border border-zinc-200">
       <h3 className="text-xl font-semibold text-[#1a1a1a] mb-4">Total Orders </h3>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={data} 
-        className='bg-red-100 m-0'
+        className=' m-0'
         // margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
           <defs>

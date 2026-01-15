@@ -29,39 +29,39 @@ const CreateTaskModal = () => {
     <Modal isOpen={isOpen && modalType === 'createTask'} onClose={closeModal} title="Create New Task">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Task Title</label>
+          <label className="block text-sm font-medium text-zinc-700 mb-1">Task Title</label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
             placeholder="Enter task title"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Assign To</label>
+          <label className="block text-sm font-medium text-zinc-700 mb-1">Assign To</label>
           <input
             type="text"
             name="assignee"
             value={formData.assignee}
             onChange={handleChange}
             placeholder="Enter assignee name"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
             required
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Priority</label>
             <select
               name="priority"
               value={formData.priority}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
             >
               <option>Low</option>
               <option>Medium</option>
@@ -69,12 +69,12 @@ const CreateTaskModal = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-zinc-700 mb-1">Status</label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
             >
               <option>Pending</option>
               <option>In Progress</option>
@@ -86,14 +86,14 @@ const CreateTaskModal = () => {
         <div className="flex gap-3 pt-4">
           <button
             type="submit"
-            className="flex-1 bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition-colors font-medium"
+            className="flex-1 cursor-pointer bg-zinc-900 text-white py-2 rounded-lg hover:bg-zinc-800 transition-colors font-medium"
           >
             Create Task
           </button>
           <button
             type="button"
             onClick={closeModal}
-            className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+            className="flex-1 cursor-pointer bg-zinc-200 text-zinc-800 py-2 rounded-lg hover:bg-zinc-300 transition-colors font-medium"
           >
             Cancel
           </button>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Source_Sans_3, Rethink_Sans,  } from "next/font/google";
 import "./globals.css";
 import { ModalProvider } from "./context/ModalContext";
+import { AuthProvider } from "./context/AuthContext";
 
 const sourceSans = Source_Sans_3({
   subsets: ["latin"],
@@ -31,11 +32,13 @@ export default function RootLayout({
     <html lang="en">
       <body
         
-        className={`${sourceSans.variable} ${rethinkSans.variable}  antialiased `}
+        className={`${sourceSans.variable} ${rethinkSans.variable}  antialiased bg-secondary `}
       >
-        <ModalProvider>
-          {children}
+        <AuthProvider>
+          <ModalProvider>
+            {children}
           </ModalProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -30,7 +30,7 @@ const defaultData: InventoryData[] = [
 
 const InventoryBarChart: React.FC<InventoryBarChartProps> = ({ data = defaultData }) => {
   return (
-    <div className="bg-white rounded-lg shadow-bordered  max-w-[800px]  p-6 border border-gray-200">
+    <div className="bg-[#e6e5de] rounded-lg min-w-150 shadow-bordered  max-w-150  p-6 border border-zinc-200">
       <h3 className="text-xl font-semibold text-[#1a1a1a] mb-4">Top 5 Inventory Items</h3>
       <ResponsiveContainer width="100%" height={300} >
         <BarChart
