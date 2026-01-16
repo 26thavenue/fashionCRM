@@ -1,9 +1,11 @@
-import React from 'react'
+import TaskCalendar from "@/app/components/ui/calendar"
+
+
 
 const page = () => {
   return (
     <div>
-      
+      <TaskCalendar/>
     </div>
   )
 }

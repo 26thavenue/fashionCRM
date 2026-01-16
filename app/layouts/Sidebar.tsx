@@ -34,9 +34,9 @@ const Sidebar = () => {
   ]
 
   const workItems = [
-    { icon: CalendarClock, label: 'Today', href: '/work/today' },
-    { icon: History, label: 'Yesterday', href: '/work/yesterday' },
-    { icon: CalendarRange, label: 'This Week', href: '/work/week' },
+    { icon: CalendarClock, label: 'Today', href: '/today' },
+    { icon: History, label: 'Yesterday', href: '/yesterday' },
+    { icon: CalendarRange, label: 'This Week', href: '/week' },
   ]
 
   const isActiveRoute = (href: string) => {

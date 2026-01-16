@@ -17,3 +17,17 @@ export const getStatusColor = (status: string) => {
       return 'bg-gray-100 text-gray-800'
   }
 }
+
+  export const getDaysInMonth = (date: Date): number => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  export const getFirstDayOfMonth = (date: Date): number => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    return new Date(year, month, 1).getDay();
+  };
+
+ 
