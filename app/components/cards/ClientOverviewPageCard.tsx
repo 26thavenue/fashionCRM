@@ -1,68 +1,39 @@
-
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
+import type { OrderItem } from '@/lib/types'
 
 interface Client {
   id: string
   name: string
   email: string
   phone?: string
-  status?: 'Active' | 'Inactive'
-  joinDate?: string
 }
 
 interface ClientListCardProps {
-  clients?: Client[]
+  clients?: OrderItem[]
 }
 
-const defaultClients: Client[] = [
-  {
-    id: 'CLI-001',
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1 234 567 8900',
-    status: 'Active',
-    joinDate: '2023-06-15',
-  },
-  {
-    id: 'CLI-002',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '+1 234 567 8901',
-    status: 'Active',
-    joinDate: '2023-08-20',
-  },
-  {
-    id: 'CLI-003',
-    name: 'Mike Johnson',
-    email: 'mike@example.com',
-    phone: '+1 234 567 8902',
-    status: 'Active',
-    joinDate: '2023-10-12',
-  },
-  {
-    id: 'CLI-004',
-    name: 'Sarah Williams',
-    email: 'sarah@example.com',
-    phone: '+1 234 567 8903',
-    status: 'Active',
-    joinDate: '2023-11-05',
-  },
-  {
-    id: 'CLI-005',
-    name: 'Emma Davis',
-    email: 'emma@example.com',
-    phone: '+1 234 567 8904',
-    status: 'Active',
-    joinDate: '2023-12-18',
-  },
-]
+const ClientOverviewPageCard: React.FC<ClientListCardProps> = ({ clients = [] }) => {
+  // Extract unique clients from orders
+  const uniqueClients = useMemo(() => {
+    const clientMap = new Map<string, Client>()
+    
+    clients.forEach(order => {
+      if (order.client_id && !clientMap.has(order.client_id)) {
+        clientMap.set(order.client_id, {
+          id: order.client_id,
+          name: order.customer_name || 'Unknown Client',
+          email: '/A',
+          phone: order.customer_number || 'N/A',
+        })
+      }
+    })
 
-const ClientOverviewPageCard: React.FC<ClientListCardProps> = ({ clients = defaultClients }) => {
-  const firstFive = clients.slice(0, 5)
+    return Array.from(clientMap.values()).slice(0, 5)
+  }, [clients])
 
   const getInitial = (name: string) => {
     return name.charAt(0).toUpperCase()
@@ -70,10 +41,36 @@ const ClientOverviewPageCard: React.FC<ClientListCardProps> = ({ clients = defau
 
   const getAvatarColor = (name: string) => {
     const colors = [
-      'bg-zinc-500'
+      'bg-purple-600',
+      'bg-blue-600',
+      'bg-green-600',
+      'bg-red-600',
+      'bg-yellow-600',
+      'bg-pink-600',
+      'bg-indigo-600',
     ]
     const index = name.charCodeAt(0) % colors.length
     return colors[index]
+  }
+
+  if (uniqueClients.length === 0) {
+    return (
+      <div className="bg-[#e6e5de] rounded-lg shadow-card border border-zinc-200 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-[#1a1a1a]">View Clients</h3>
+          <Link
+            href="/dashboard/clients"
+            className="text-sm text-zinc-600 hover:text-zinc-900 flex items-center gap-1"
+          >
+            View All
+            <ChevronRight size={16} />
+          </Link>
+        </div>
+        <div className="text-center py-8">
+          <p className="text-zinc-500">No clients yet</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -91,15 +88,8 @@ const ClientOverviewPageCard: React.FC<ClientListCardProps> = ({ clients = defau
 
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead>
-            {/* <tr className="border-b border-zinc-200">
-              <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Avatar</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Name</th>
-              <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-700">Email</th>
-            </tr> */}
-          </thead>
           <tbody>
-            {firstFive.map((client) => (
+            {uniqueClients.map((client) => (
               <tr
                 key={client.id}
                 className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors"

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Filter, MoreVertical } from 'lucide-react'
-import { Order } from '@/lib/types'
+import { OrderItem } from '@/lib/types'
 import {
   Table,
   TableBody,
@@ -14,84 +14,65 @@ import {
 import { getStatusColor } from '@/lib/utils'
 import { useModal } from '@/app/context/ModalContext'
 import CreateOrderModal from '@/app/components/modals/CreateOrderModal'
-
-
-
-const ordersData: Order[] = [
-  {
-    id: 'ORD-001',
-    customerNumber: 'CLI-001',
-    customer: 'John Doe',
-    amount: 1200,
-    amountPaid: 1200,
-    status: 'Completed',
-    date: '2024-01-10',
-    dueDate: '2024-01-15',
-  },
-  {
-    id: 'ORD-002',
-    customerNumber: 'CLI-002',
-    customer: 'Jane Smith',
-    amount: 850,
-    amountPaid: 425,
-    status: 'Pending',
-    date: '2024-01-09',
-    dueDate: '2024-01-20',
-  },
-  {
-    id: 'ORD-003',
-    customerNumber: 'CLI-003',
-    customer: 'Mike Johnson',
-    amount: 2100,
-    amountPaid: 2100,
-    status: 'Completed',
-    date: '2024-01-08',
-    dueDate: '2024-01-18',
-  },
-  {
-    id: 'ORD-004',
-    customerNumber: 'CLI-004',
-    customer: 'Sarah Williams',
-    amount: 650,
-    amountPaid: 0,
-    status: 'Cancelled',
-    date: '2024-01-07',
-    dueDate: '2024-01-22',
-  },
-  {
-    id: 'ORD-005',
-    customerNumber: 'CLI-005',
-    customer: 'David Brown',
-    amount: 1800,
-    amountPaid: 1800,
-    status: 'Completed',
-    date: '2024-01-06',
-    dueDate: '2024-01-25',
-  },
-]
-
+import { getOrders, updateOrder } from '@/lib/services/order'
 
 export default function OrdersPage() {
   const { openModal } = useModal()
   const [filterStatus, setFilterStatus] = useState<string>('All')
-  const [orders, setOrders] = useState(ordersData)
-  const [editingOrder, setEditingOrder] = useState<Order | null>(null)
+  const [orders, setOrders] = useState<OrderItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [editingOrder, setEditingOrder] = useState<OrderItem | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true)
+        const response = await getOrders()
+        if (response.error) {
+          setError(response.error.message || 'Failed to fetch orders')
+        } else {
+          setOrders(response.data || [])
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOrders()
+  }, [])
 
   const filteredOrders = filterStatus === 'All' 
     ? orders 
     : orders.filter(order => order.status === filterStatus)
 
-  const handleEditOrder = (order: Order) => {
+  const handleEditOrder = (order: OrderItem) => {
     setEditingOrder(order)
     setShowEditModal(true)
   }
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editingOrder) {
-      setOrders(orders.map(o => o.id === editingOrder.id ? editingOrder : o))
-      setShowEditModal(false)
-      setEditingOrder(null)
+      try {
+        const response = await updateOrder(editingOrder.id, {
+          status: editingOrder.status,
+          amount_paid: editingOrder.amount_paid,
+          due_date: editingOrder.due_date,
+        })
+        if (response.error) {
+          setError(response.error.message || 'Failed to update order')
+        } else {
+          const updatedData = response.data || []
+          setOrders(orders.map(o => o.id === editingOrder.id ? updatedData[0] : o))
+          setShowEditModal(false)
+          setEditingOrder(null)
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      }
     }
   }
 
@@ -141,29 +122,49 @@ export default function OrdersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredOrders.map((order) => (
-              <TableRow key={order.id} className="border-b border-zinc-100 hover:bg-zinc-50">
-                <TableCell className="font-medium text-zinc-900">{order.id}</TableCell>
-                <TableCell className="text-zinc-700">{order.customer}</TableCell>
-                <TableCell className="text-zinc-700 font-medium">{order.customerNumber || 'N/A'}</TableCell>
-                <TableCell className="text-zinc-900 font-semibold">${order.amount}</TableCell>
-                <TableCell className="text-zinc-700">${order.amountPaid || 0}</TableCell>
-                <TableCell>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                    {order.status}
-                  </span>
-                </TableCell>
-                <TableCell className="text-zinc-600">{order.date}</TableCell>
-                <TableCell>
-                  <button
-                    onClick={() => handleEditOrder(order)}
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg cursor-pointer hover:bg-zinc-200 transition-colors text-zinc-600 hover:text-zinc-900"
-                  >
-                    <MoreVertical size={18} />
-                  </button>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-zinc-500">
+                  Loading orders...
                 </TableCell>
               </TableRow>
-            ))}
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-red-500">
+                  Error: {error}
+                </TableCell>
+              </TableRow>
+            ) : filteredOrders.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-zinc-500">
+                  No orders found
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredOrders.map((order) => (
+                <TableRow key={order.id} className="border-b border-zinc-100 hover:bg-zinc-50">
+                  <TableCell className="font-medium text-zinc-900">{order.id}</TableCell>
+                  <TableCell className="text-zinc-700">{order.customer_name || 'N/A'}</TableCell>
+                  <TableCell className="text-zinc-700 font-medium">{order.client_id || 'N/A'}</TableCell>
+                  <TableCell className="text-zinc-900 font-semibold">${order.amount}</TableCell>
+                  <TableCell className="text-zinc-700">${order.amount_paid || 0}</TableCell>
+                  <TableCell>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+                      {order.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-zinc-600">{order.due_date || 'N/A'}</TableCell>
+                  <TableCell>
+                    <button
+                      onClick={() => handleEditOrder(order)}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg cursor-pointer hover:bg-zinc-200 transition-colors text-zinc-600 hover:text-zinc-900"
+                    >
+                      <MoreVertical size={18} />
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
@@ -178,8 +179,8 @@ export default function OrdersPage() {
                 <label className="block text-sm font-medium text-[#1a1a1a] mb-1">Amount Paid</label>
                 <input
                   type="number"
-                  value={editingOrder.amountPaid || 0}
-                  onChange={(e) => setEditingOrder({ ...editingOrder, amountPaid: parseFloat(e.target.value) })}
+                  value={editingOrder.amount_paid || 0}
+                  onChange={(e) => setEditingOrder({ ...editingOrder, amount_paid: parseFloat(e.target.value) })}
                   className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
                 />
               </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Filter } from 'lucide-react'
 import {
   Table,
@@ -12,60 +12,10 @@ import {
 } from '../../components/ui/table'
 import { useModal } from '@/app/context/ModalContext'
 import CreateTaskModal from '@/app/components/modals/CreateTaskModal'
+import { TaskItem } from '@/lib/types'
+import { getTasks } from '@/lib/services/task'
 
-interface Task {
-  id: string
-  title: string
-  assignee: string
-  priority: 'High' | 'Medium' | 'Low'
-  status: 'Completed' | 'In Progress' | 'Pending'
-  dueDate: string
-}
-
-const tasksData: Task[] = [
-  {
-    id: 'TSK-001',
-    title: 'Design new product collection',
-    assignee: 'Emily Davis',
-    priority: 'High',
-    status: 'In Progress',
-    dueDate: '2024-01-15',
-  },
-  {
-    id: 'TSK-002',
-    title: 'Update inventory system',
-    assignee: 'John Doe',
-    priority: 'Medium',
-    status: 'Completed',
-    dueDate: '2024-01-10',
-  },
-  {
-    id: 'TSK-003',
-    title: 'Process customer refunds',
-    assignee: 'Sarah Williams',
-    priority: 'High',
-    status: 'In Progress',
-    dueDate: '2024-01-12',
-  },
-  {
-    id: 'TSK-004',
-    title: 'Review marketing campaign',
-    assignee: 'Mike Johnson',
-    priority: 'Medium',
-    status: 'Pending',
-    dueDate: '2024-01-18',
-  },
-  {
-    id: 'TSK-005',
-    title: 'Send monthly report',
-    assignee: 'Jane Smith',
-    priority: 'Low',
-    status: 'Pending',
-    dueDate: '2024-01-20',
-  },
-]
-
-const getPriorityColor = (priority: string) => {
+const getPriorityColor = (priority?: string) => {
   switch (priority) {
     case 'High':
       return 'bg-red-100 text-red-800'
@@ -78,7 +28,7 @@ const getPriorityColor = (priority: string) => {
   }
 }
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status?: string) => {
   switch (status) {
     case 'Completed':
       return 'bg-green-100 text-green-800'
@@ -94,10 +44,33 @@ const getStatusColor = (status: string) => {
 export default function TasksPage() {
   const { openModal } = useModal()
   const [filterStatus, setFilterStatus] = useState<string>('All')
+  const [tasks, setTasks] = useState<TaskItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setLoading(true)
+        const response = await getTasks()
+        if (response.error) {
+          setError(response.error.message || 'Failed to fetch tasks')
+        } else {
+          setTasks(response.data || [])
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTasks()
+  }, [])
 
   const filteredTasks = filterStatus === 'All' 
-    ? tasksData 
-    : tasksData.filter(task => task.status === filterStatus)
+    ? tasks 
+    : tasks.filter(task => task.status === filterStatus)
 
   return (
     <div className="p-8">
@@ -143,24 +116,44 @@ export default function TasksPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTasks.map((task) => (
-              <TableRow key={task.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <TableCell className="font-medium text-gray-900">{task.id}</TableCell>
-                <TableCell className="text-gray-700">{task.title}</TableCell>
-                <TableCell className="text-gray-600">{task.assignee}</TableCell>
-                <TableCell>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(task.priority)}`}>
-                    {task.priority}
-                  </span>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-zinc-500">
+                  Loading tasks...
                 </TableCell>
-                <TableCell>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(task.status)}`}>
-                    {task.status}
-                  </span>
-                </TableCell>
-                <TableCell className="text-gray-600">{task.dueDate}</TableCell>
               </TableRow>
-            ))}
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-red-500">
+                  Error: {error}
+                </TableCell>
+              </TableRow>
+            ) : filteredTasks.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-zinc-500">
+                  No tasks found
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredTasks.map((task) => (
+                <TableRow key={task.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <TableCell className="font-medium text-gray-900">{task.id}</TableCell>
+                  <TableCell className="text-gray-700">{task.task_name}</TableCell>
+                  <TableCell className="text-gray-600">N/A</TableCell>
+                  <TableCell>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(task.priority)}`}>
+                      {task.priority || 'Low'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(task.status)}`}>
+                      {task.status || 'Pending'}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-gray-600">{task.due_date}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

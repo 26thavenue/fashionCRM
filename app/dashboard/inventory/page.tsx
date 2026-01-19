@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Filter } from 'lucide-react'
 import {
   Table,
@@ -12,58 +12,8 @@ import {
 } from '../../components/ui/table'
 import { useModal } from '@/app/context/ModalContext'
 import CreateInventoryModal from '@/app/components/modals/CreateInventoryModal'
-
-interface InventoryItem {
-  id: string
-  name: string
-  sku: string
-  quantity: number
-  category: string
-  price: number
-}
-
-const inventoryData: InventoryItem[] = [
-  {
-    id: 'INV-001',
-    name: 'Classic T-Shirt',
-    sku: 'TS-001',
-    quantity: 245,
-    category: 'Apparel',
-    price: 29.99,
-  },
-  {
-    id: 'INV-002',
-    name: 'Denim Jeans',
-    sku: 'DJ-002',
-    quantity: 156,
-    category: 'Apparel',
-    price: 79.99,
-  },
-  {
-    id: 'INV-003',
-    name: 'Summer Dress',
-    sku: 'SD-003',
-    quantity: 89,
-    category: 'Apparel',
-    price: 49.99,
-  },
-  {
-    id: 'INV-004',
-    name: 'Winter Coat',
-    sku: 'WC-004',
-    quantity: 45,
-    category: 'Outerwear',
-    price: 149.99,
-  },
-  {
-    id: 'INV-005',
-    name: 'Casual Sneakers',
-    sku: 'SN-005',
-    quantity: 203,
-    category: 'Footwear',
-    price: 89.99,
-  },
-]
+import { InventoryItem } from '@/lib/types'
+import { getInventory } from '@/lib/services/inventory'
 
 const getStockColor = (quantity: number) => {
   if (quantity > 200) return 'text-green-700 font-semibold'
@@ -74,10 +24,33 @@ const getStockColor = (quantity: number) => {
 export default function InventoryPage() {
   const { openModal } = useModal()
   const [filterCategory, setFilterCategory] = useState<string>('All')
+  const [inventory, setInventory] = useState<InventoryItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        setLoading(true)
+        const response = await getInventory()
+        if (response.error) {
+          setError(response.error.message || 'Failed to fetch inventory')
+        } else {
+          setInventory(response.data || [])
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInventory()
+  }, [])
 
   const filteredInventory = filterCategory === 'All' 
-    ? inventoryData 
-    : inventoryData.filter(item => item.category === filterCategory)
+    ? inventory 
+    : inventory.filter(item => item.apparel_type === filterCategory)
 
   return (
     <div className="p-8">
@@ -124,16 +97,36 @@ export default function InventoryPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredInventory.map((item) => (
-              <TableRow key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <TableCell className="font-medium text-gray-900">{item.id}</TableCell>
-                <TableCell className="text-gray-700">{item.name}</TableCell>
-                <TableCell className="text-gray-600">{item.sku}</TableCell>
-                <TableCell className={getStockColor(item.quantity)}>{item.quantity}</TableCell>
-                <TableCell className="text-gray-600">{item.category}</TableCell>
-                <TableCell className="text-gray-900 font-semibold">${item.price.toFixed(2)}</TableCell>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-zinc-500">
+                  Loading inventory...
+                </TableCell>
               </TableRow>
-            ))}
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-red-500">
+                  Error: {error}
+                </TableCell>
+              </TableRow>
+            ) : filteredInventory.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-zinc-500">
+                  No inventory items found
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredInventory.map((item) => (
+                <TableRow key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <TableCell className="font-medium text-gray-900">{item.id}</TableCell>
+                  <TableCell className="text-gray-700">{item.inventory_name}</TableCell>
+                  <TableCell className="text-gray-600">{item.sku}</TableCell>
+                  <TableCell className={getStockColor(item.quantity)}>{item.quantity}</TableCell>
+                  <TableCell className="text-gray-600">{item.apparel_type || 'N/A'}</TableCell>
+                  <TableCell className="text-gray-900 font-semibold">${(item.unit_price || 0).toFixed(2)}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

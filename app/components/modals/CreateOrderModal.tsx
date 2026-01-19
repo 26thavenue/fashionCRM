@@ -4,77 +4,67 @@ import React, { useState } from 'react'
 import Modal from '../Modal'
 import { useModal } from '@/app/context/ModalContext'
 import { Upload, X } from 'lucide-react'
+import { createOrder } from '@/lib/services/order'
+import { CreateOrderInput } from '@/lib/types'
 
 const CreateOrderModal = () => {
   const { isOpen, modalType, closeModal } = useModal()
-  const [formData, setFormData] = useState({
-    customerNumber: '',
-    customerName: '',
-    amountPaid: '',
-    totalAmount: '',
-    dueDate: '',
-    dressInspo: [] as string[],
+  const [formData, setFormData] = useState<CreateOrderInput>({
+    customer_number: '',
+    customer_name: '',
+    status: 'Pending',
+    amount: 0,
+    amount_paid: undefined,
+    due_date: undefined,
   })
-
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [fileInputKey, setFileInputKey] = useState(0)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Creating order:', formData)
-    closeModal()
-    setFormData({
-      customerNumber: '',
-      customerName: '',
-      amountPaid: '',
-      totalAmount: '',
-      dueDate: '',
-      dressInspo: [],
-    })
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && formData.dressInspo.length < 5) {
-      Array.from(files).forEach((file) => {
-        if (formData.dressInspo.length < 5) {
-          const reader = new FileReader()
-          reader.onload = (event) => {
-            const result = event.target?.result as string
-            setFormData((prev) => ({
-              ...prev,
-              dressInspo: [...prev.dressInspo, result],
-            }))
-          }
-          reader.readAsDataURL(file)
-        }
-      })
+    setError(null)
+    try {
+      setLoading(true)
+      const response = await createOrder(formData)
+      if (response.error) {
+        setError(response.error.message || 'Failed to create order')
+      } else {
+        closeModal()
+        setFormData({ customer_number: '', customer_name: '', status: 'Pending', amount: 0, amount_paid: undefined, due_date: undefined })
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoading(false)
     }
-    setFileInputKey((prev) => prev + 1)
   }
 
-  const removeImage = (index: number) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
-      dressInspo: prev.dressInspo.filter((_, i) => i !== index),
+      [name]: name === 'amount' || name === 'amount_paid' ? (value ? parseFloat(value) : (name === 'amount' ? 0 : undefined)) : value,
     }))
   }
 
   return (
     <Modal isOpen={isOpen && modalType === 'createOrder'} onClose={closeModal} title="Create New Order">
       <form onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Customer Number & Name - Flexed */}
         <div className="flex gap-3">
           <div className="flex-1">
             <label className="block text-md text-[#1a1a1a] mb-1">Customer Number</label>
             <input
               type="text"
-              name="customerNumber"
-              value={formData.customerNumber}
+              name="customer_number"
+              value={formData.customer_number}
               onChange={handleChange}
               placeholder="e.g., 0803344.."
               className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-400"
@@ -85,8 +75,8 @@ const CreateOrderModal = () => {
             <label className="block text-md text-[#1a1a1a] mb-1">Customer Name</label>
             <input
               type="text"
-              name="customerName"
-              value={formData.customerName}
+              name="customer_name"
+              value={formData.customer_name}
               onChange={handleChange}
               placeholder="Enter customer name"
               className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
@@ -101,20 +91,19 @@ const CreateOrderModal = () => {
             <label className="block text-md text-[#1a1a1a] mb-1">Amount Paid</label>
             <input
               type="number"
-              name="amountPaid"
-              value={formData.amountPaid}
+              name="amount_paid"
+              value={formData.amount_paid || ''}
               onChange={handleChange}
               placeholder="Enter amount paid"
               className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
-              required
             />
           </div>
           <div className="flex-1">
             <label className="block text-md text-[#1a1a1a] mb-1">Total Amount</label>
             <input
               type="number"
-              name="totalAmount"
-              value={formData.totalAmount}
+              name="amount"
+              value={formData.amount}
               onChange={handleChange}
               placeholder="Enter total amount"
               className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
@@ -123,79 +112,42 @@ const CreateOrderModal = () => {
           </div>
         </div>
 
-        {/* Dress Inspo - Image Upload */}
-        <div>
-          <label className="block text-md text-[#1a1a1a] mb-2">Dress Inspo (Pick up to 5 pictures)</label>
-          <div className="mb-3">
-            <label className="flex items-center justify-center gap-2 px-3 py-2 border-2 border-dashed border-zinc-300 rounded-lg cursor-pointer hover:border-zinc-400 transition-colors">
-              <Upload size={18} className="text-zinc-600" />
-              <span className="text-sm text-zinc-600">Click to upload images</span>
-              <input
-                key={fileInputKey}
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={formData.dressInspo.length >= 5}
-                className="hidden"
-              />
-            </label>
-            <p className="text-xs text-zinc-500 mt-1">
-              {formData.dressInspo.length}/5 images selected
-            </p>
-          </div>
-
-          {/* Image Preview Grid */}
-          {formData.dressInspo.length > 0 && (
-            <div className="grid grid-cols-5 gap-2">
-              {formData.dressInspo.map((image, index) => (
-                <div key={index} className="relative group">
-                  <img
-                    src={image}
-                    alt={`Dress inspo ${index + 1}`}
-                    className="w-full h-20 object-cover rounded-lg border border-zinc-200"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 bg-red-500 cursor-pointer text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Due Date */}
         <div>
           <label className="block text-md text-[#1a1a1a] mb-1">Due Date</label>
           <input
             type="date"
-            name="dueDate"
-            value={formData.dueDate}
+            name="due_date"
+            value={formData.due_date || ''}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
-            required
           />
+        </div>
+
+        {/* Status */}
+        <div>
+          <label className="block text-md text-[#1a1a1a] mb-1">Status</label>
+          <select
+            name="status"
+            value={formData.status || 'Pending'}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400"
+          >
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
         </div>
 
         {/* Buttons */}
         <div className="flex gap-3 pt-4">
           <button
             type="submit"
-            className="flex-1 cursor-pointer bg-primary text-white py-2.5 rounded-lg hover:bg-zinc-800 transition-colors font-medium"
+            disabled={loading}
+            className="flex-1 cursor-pointer bg-primary text-white py-2.5 rounded-lg hover:bg-zinc-800 transition-colors font-medium disabled:opacity-50"
           >
-            Create Order
+            {loading ? 'Creating...' : 'Create Order'}
           </button>
-          {/* <button
-            type="button"
-            onClick={closeModal}
-            className="flex-1 cursor-pointer bg-zinc-200 text-zinc-800 py-2 rounded-lg hover:bg-zinc-300 transition-colors font-medium"
-          >
-            Cancel
-          </button> */}
         </div>
       </form>
     </Modal>

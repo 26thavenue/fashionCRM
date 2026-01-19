@@ -12,58 +12,7 @@ import {
 } from '../../components/ui/table'
 import { useModal } from '@/app/context/ModalContext'
 import CreateClientModal from '@/app/components/modals/CreateClientModal'
-
-interface Client {
-  id: string
-  name: string
-  email: string
-  phone: string
-  status: 'Active' | 'Inactive'
-  joinDate: string
-}
-
-const clientsData: Client[] = [
-  {
-    id: 'CLI-001',
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1 234 567 8900',
-    status: 'Active',
-    joinDate: '2023-06-15',
-  },
-  {
-    id: 'CLI-002',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '+1 234 567 8901',
-    status: 'Active',
-    joinDate: '2023-08-20',
-  },
-  {
-    id: 'CLI-003',
-    name: 'Mike Johnson',
-    email: 'mike@example.com',
-    phone: '+1 234 567 8902',
-    status: 'Active',
-    joinDate: '2023-10-12',
-  },
-  {
-    id: 'CLI-004',
-    name: 'Sarah Williams',
-    email: 'sarah@example.com',
-    phone: '+1 234 567 8903',
-    status: 'Inactive',
-    joinDate: '2023-04-05',
-  },
-  {
-    id: 'CLI-005',
-    name: 'David Brown',
-    email: 'david@example.com',
-    phone: '+1 234 567 8904',
-    status: 'Active',
-    joinDate: '2023-11-22',
-  },
-]
+import { Client } from '@/lib/types'
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -79,10 +28,30 @@ const getStatusColor = (status: string) => {
 export default function ClientsPage() {
   const { openModal } = useModal()
   const [filterStatus, setFilterStatus] = useState<string>('All')
+  const [clients, setClients] = useState<Client[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // TODO: Fetch clients from service when available
+  // useEffect(() => {
+  //   const fetchClients = async () => {
+  //     try {
+  //       setLoading(true)
+  //       const response = await getClients()
+  //       if (response.error) {
+  //         // Handle error
+  //       } else {
+  //         setClients(response.data || [])
+  //       }
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+  //   fetchClients()
+  // }, [])
 
   const filteredClients = filterStatus === 'All' 
-    ? clientsData 
-    : clientsData.filter(client => client.status === filterStatus)
+    ? clients 
+    : clients.filter(client => (client.email ? 'Active' : 'Inactive') === filterStatus)
 
   return (
     <div className="p-8">
@@ -126,19 +95,33 @@ export default function ClientsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredClients.map((client) => (
-              <TableRow key={client.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <TableCell className="font-medium text-gray-900">{client.id}</TableCell>
-                <TableCell className="text-gray-700">{client.name}</TableCell>
-                <TableCell className="text-gray-600">{client.email}</TableCell>
-                <TableCell className="text-gray-600">{client.phone}</TableCell>
-                <TableCell>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(client.status)}`}>
-                    {client.status}
-                  </span>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8 text-zinc-500">
+                  Loading clients...
                 </TableCell>
               </TableRow>
-            ))}
+            ) : clients.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8 text-zinc-500">
+                  No clients found
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredClients.map((client) => (
+                <TableRow key={client.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <TableCell className="font-medium text-gray-900">{client.id}</TableCell>
+                  <TableCell className="text-gray-700">{client.name}</TableCell>
+                  <TableCell className="text-gray-600">{client.email || 'N/A'}</TableCell>
+                  <TableCell className="text-gray-600">{client.phone_number || 'N/A'}</TableCell>
+                  <TableCell>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(client.email ? 'Active' : 'Inactive')}`}>
+                      {client.email ? 'Active' : 'Inactive'}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

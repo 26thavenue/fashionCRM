@@ -114,14 +114,14 @@ const Sidebar = () => {
 
       {/* BOTTOM: Settings & Logout */}
       <div className="px-2 py-4 border-t border-zinc-200/50 mt-auto space-y-2">
-           <Link href={`${DASHBOARD_BASE}/settings`} className="flex items-center gap-2.5 px-2.5 py-1 min-h-[30px] text-sm font-medium text-zinc-500 rounded-md hover:bg-zinc-200/40 hover:text-zinc-900 transition-colors">
+           {/* <Link href={`${DASHBOARD_BASE}/settings`} className="flex items-center gap-2.5 px-2.5 py-1 min-h-[30px] text-sm font-medium text-zinc-500 rounded-md hover:bg-zinc-200/40 hover:text-zinc-900 transition-colors">
               <Settings size={18} className="text-zinc-400"/>
               Settings
-           </Link>
+           </Link> */}
            <button 
              onClick={() => {
                logout()
-               router.push('/login')
+               router.push('/auth/login')
              }}
              className="w-full flex items-center gap-2.5 px-2.5 py-1 min-h-[30px] text-sm font-medium text-zinc-500 rounded-md hover:bg-red-100/50 hover:text-red-700 transition-colors cursor-pointer"
            >

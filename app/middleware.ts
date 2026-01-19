@@ -1,8 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
-export function middleware(request: NextRequest) {
-  // Get the token from cookies or localStorage (via headers)
-  const token = request.cookies.get('authToken')?.value
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    return response
+  }
+
+  // Create a Supabase client with the request/response pattern
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          response.cookies.set(name, value, options)
+        })
+      },
+    },
+  })
+
+  // Refresh session if needed
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // Get the pathname
   const { pathname } = request.nextUrl
@@ -13,17 +43,17 @@ export function middleware(request: NextRequest) {
   // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
 
-  // If it's a protected route and no token exists, redirect to login
-  if (isProtectedRoute && !token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // If it's a protected route and no user exists, redirect to login
+  if (isProtectedRoute && !user) {
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  // If user is on login page and has token, redirect to dashboard
-  if (pathname === '/login' && token) {
+  // If user is on login or signup page and is already authenticated, redirect to dashboard
+  if ((pathname === '/auth/login' || pathname === '/auth/signup') && user) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {

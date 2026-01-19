@@ -3,6 +3,7 @@ import { Source_Sans_3, Rethink_Sans,  } from "next/font/google";
 import "./globals.css";
 import { ModalProvider } from "./context/ModalContext";
 import { AuthProvider } from "./context/AuthContext";
+import { Toaster } from "./components/ui/sonner";
 
 const sourceSans = Source_Sans_3({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
         <AuthProvider>
           <ModalProvider>
             {children}
+            <Toaster />
           </ModalProvider>
         </AuthProvider>
       </body>

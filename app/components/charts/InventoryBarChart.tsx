@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   BarChart,
   Bar,
@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import type { InventoryItem } from '@/lib/types'
 
 interface InventoryData {
   name: string
@@ -17,26 +18,39 @@ interface InventoryData {
 }
 
 interface InventoryBarChartProps {
-  data?: InventoryData[]
+  inventoryData?: InventoryItem[]
 }
 
-const defaultData: InventoryData[] = [
-  { name: 'Silk', quantity: 450 },
-  { name: 'Cotton', quantity: 380 },
-  { name: 'Lace', quantity: 290 },
-  { name: 'Polyester', quantity: 220 },
-  { name: 'Wool Blend', quantity: 160 },
-]
+const InventoryBarChart: React.FC<InventoryBarChartProps> = ({ inventoryData = [] }) => {
+  // Process inventory data to get top 5 items
+  const chartData = useMemo(() => {
+    if (inventoryData.length === 0) {
+      return [
+        { name: 'Silk', quantity: 450 },
+        { name: 'Cotton', quantity: 380 },
+        { name: 'Lace', quantity: 290 },
+        { name: 'Polyester', quantity: 220 },
+        { name: 'Wool Blend', quantity: 160 },
+      ]
+    }
 
-const InventoryBarChart: React.FC<InventoryBarChartProps> = ({ data = defaultData }) => {
+    // Sort by quantity and take top 5
+    return inventoryData
+      .map(item => ({
+        name: item.inventory_name || 'Unknown',
+        quantity: item.quantity || 0,
+      }))
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5)
+  }, [inventoryData])
+
   return (
     <div className="bg-[#e6e5de] rounded-lg min-w-150 shadow-bordered  max-w-150  p-6 border border-zinc-200">
       <h3 className="text-xl font-semibold text-[#1a1a1a] mb-4">Top 5 Inventory Items</h3>
       <ResponsiveContainer width="100%" height={300} >
         <BarChart
-          data={data}
+          data={chartData}
           layout="vertical"
-        //   margin={{ top: 5, right: 10, left: 120, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis 
