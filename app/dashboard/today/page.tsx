@@ -103,11 +103,11 @@ const TodayPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-secondary min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-secondary min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-zinc-800 mb-2">Today's Overview</h1>
-        <p className="text-zinc-600">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-800 mb-2">Today's Overview</h1>
+        <p className="text-sm sm:text-base text-zinc-600">
           {new Date().toLocaleDateString('en-US', {
             weekday: 'long',
             month: 'long',
@@ -118,7 +118,7 @@ const TodayPage: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
         <DataCard
           header="Tasks Today"
           value={tasks.length}
@@ -146,36 +146,36 @@ const TodayPage: React.FC = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid w-full gap-6">
+      <div className="grid w-full gap-4 sm:gap-6">
         {/* Tasks Section */}
         <div>
-          <div className="bg-white rounded-lg p-6">
+          <div className="bg-white rounded-lg p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
-              <CheckCircle2 className='w-6 h-6 text-zinc-700'/>
-              <h2 className="text-2xl font-semibold text-zinc-900">Tasks</h2>
+              <CheckCircle2 className='w-5 sm:w-6 h-5 sm:h-6 text-zinc-700'/>
+              <h2 className="text-lg sm:text-2xl font-semibold text-zinc-900">Tasks</h2>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 overflow-x-auto">
               {tasks.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-zinc-500">No tasks scheduled for today</p>
+                  <p className="text-sm sm:text-base text-zinc-500">No tasks scheduled for today</p>
                 </div>
               ) : (
                 tasks.map((task, index) => (
                   <div
                     key={task.id}
-                    className="flex items-center gap-3 p-4 bg-zinc-50 border border-zinc-200 rounded-lg hover:shadow-md transition-all"
+                    className="flex items-center gap-3 p-3 sm:p-4 bg-zinc-50 border border-zinc-200 rounded-lg hover:shadow-md transition-all"
                   >
-                    <div className="flex-shrink-0 w-8 h-8 bg-zinc-800 text-white rounded-full flex items-center justify-center font-semibold text-sm">
+                    <div className="flex-shrink-0 w-7 sm:w-8 h-7 sm:h-8 bg-zinc-800 text-white rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm">
                       {index + 1}
                     </div>
 
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         {getTaskStatusIcon(task.status || "default")}
-                        <h3 className="text-sm font-medium text-zinc-900">{task.task_name}</h3>
+                        <h3 className="text-xs sm:text-sm font-medium text-zinc-900 truncate">{task.task_name}</h3>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span
                           className={`text-xs font-semibold px-2 py-1 rounded ${
                             task.priority === 'High'

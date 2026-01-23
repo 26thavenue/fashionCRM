@@ -51,20 +51,20 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
+    <div className="min-h-screen bg-secondary flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-purple-600 rounded-lg text-white flex items-center justify-center font-bold text-xl mx-auto mb-4">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="w-10 sm:w-12 h-10 sm:h-12 bg-purple-600 rounded-lg text-white flex items-center justify-center font-bold text-lg sm:text-xl mx-auto mb-3 sm:mb-4">
             T
           </div>
-          <h1 className="text-3xl font-bold text-zinc-900 mb-2">Thalia CRM</h1>
-          <p className="text-zinc-600">Fashion Management System</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 mb-2">Thalia CRM</h1>
+          <p className="text-sm sm:text-base text-zinc-600">Fashion Management System</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-card p-8 border border-zinc-100">
-          <h2 className="text-2xl font-semibold text-zinc-900 mb-6">Sign In</h2>
+        <div className="bg-white rounded-2xl shadow-card p-6 sm:p-8 border border-zinc-100">
+          <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900 mb-6">Sign In</h2>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -78,7 +78,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-sm"
                 disabled={isLoading}
               />
             </div>
@@ -94,7 +94,7 @@ const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all pr-10"
+                  className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all pr-10 text-sm"
                   disabled={isLoading}
                 />
                 <button
@@ -111,7 +111,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full cursor-pointer py-2 px-4 bg-zinc-600 hover:bg-zinc-700 disabled:bg-purple-400 text-white font-medium rounded-lg transition-colors duration-200 mt-6"
+              className="w-full cursor-pointer py-2 px-4 bg-zinc-600 hover:bg-zinc-700 disabled:bg-purple-400 text-white font-medium rounded-lg transition-colors duration-200 mt-6 text-sm"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
@@ -127,14 +127,14 @@ const LoginPage = () => {
           {/* Signup Link */}
           <Link
             href="/auth/signup"
-            className="w-full block text-center py-2 px-4 border border-zinc-300 text-zinc-700 font-medium rounded-lg hover:bg-zinc-50 transition-colors duration-200"
+            className="w-full block text-center py-2 px-4 border border-zinc-300 text-zinc-700 font-medium rounded-lg hover:bg-zinc-50 transition-colors duration-200 text-sm"
           >
             Create Account
           </Link>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-zinc-600 mt-6">
+        <p className="text-center text-xs sm:text-sm text-zinc-600 mt-6">
           © 2026 Thalia CRM. All rights reserved.
         </p>
       </div>

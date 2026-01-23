@@ -100,12 +100,12 @@ const YesterdayPage: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-secondary min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-secondary min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-zinc-800 mb-2">Yesterday's Overview</h1>
-        <p className="text-zinc-600">
-          {yesterdayDate.toLocaleDateString('en-US', {
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-800 mb-2">Yesterday's Overview</h1>
+        <p className="text-sm sm:text-base text-zinc-600">
+          {new Date(Date.now() - 86400000).toLocaleDateString('en-US', {
             weekday: 'long',
             month: 'long',
             day: 'numeric',
@@ -115,7 +115,7 @@ const YesterdayPage: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
         <DataCard
           header="Tasks Yesterday"
           value={tasks.length}

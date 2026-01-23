@@ -54,27 +54,27 @@ export default function ClientsPage() {
     : clients.filter(client => (client.email ? 'Active' : 'Inactive') === filterStatus)
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-zinc-900">Clients</h1>
-        <p className="text-zinc-500 mt-2">View and manage your client database</p>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900">Clients</h1>
+        <p className="text-zinc-500 text-sm sm:text-base mt-2">View and manage your client database</p>
       </div>
 
       {/* Action Bar */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <button
           onClick={() => openModal('createClient')}
-          className="flex items-center gap-2 cursor-pointer bg-zinc-900 text-white px-4 py-2 rounded-lg hover:bg-zinc-800 transition-colors font-medium"
+          className="flex items-center justify-center sm:justify-start gap-2 cursor-pointer bg-zinc-900 text-white px-4 py-2 rounded-lg hover:bg-zinc-800 transition-colors font-medium text-sm"
         >
           <Plus size={20} />
           Create Client
         </button>
         <div className="flex items-center gap-2 bg-white border border-zinc-200 px-4 py-2 rounded-lg">
-          <Filter size={20} className="text-zinc-600" />
+          <Filter size={20} className="text-zinc-600 flex-shrink-0" />
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-transparent border-none outline-none text-zinc-700 font-medium"
+            className="bg-transparent border-none outline-none text-zinc-700 font-medium text-sm"
           >
             <option>All</option>
             <option>Active</option>
@@ -83,7 +83,7 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-zinc-100 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-zinc-100 overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-zinc-50 border-b border-zinc-200">

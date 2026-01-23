@@ -73,12 +73,12 @@ const DashboardPage = () => {
   const totalOrderValue = orders.reduce((sum, o) => sum + (o.amount || 0), 0)
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-semibold text-zinc-900 mb-3 tracking-tight">Dashboard</h1>
-      <h2 className="text-zinc-600 text-base mb-8">View insights into your business metrics</h2>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-900 mb-3 tracking-tight">Dashboard</h1>
+      <h2 className="text-zinc-600 text-sm sm:text-base mb-6 sm:mb-8">View insights into your business metrics</h2>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <DataCard 
           header="Total Orders"
           value={totalOrders.toLocaleString()}
@@ -107,10 +107,14 @@ const DashboardPage = () => {
       </div>
 
       {/* Charts Grid */}
-      <div className="flex flex-col gap-6 my-8">
-        <div className='flex gap-8'>
-           <OrdersAreaChart orders={orders}/>
-           <ClientOverviewPageCard clients={orders}/>
+      <div className="flex flex-col gap-4 sm:gap-6 my-6 sm:my-8">
+        <div className='flex flex-col lg:flex-row gap-4 sm:gap-8'>
+           <div className="w-full lg:w-1/2">
+             <OrdersAreaChart orders={orders}/>
+           </div>
+           <div className="w-full lg:w-1/2">
+             <ClientOverviewPageCard clients={orders}/>
+           </div>
         </div>
 
         {/* <div className='flex gap-8'>
